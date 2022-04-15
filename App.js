@@ -1,11 +1,11 @@
 import estilo from "./Estilo";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
+  Image,
 } from "react-native";
 import axios from "axios";
 
@@ -19,25 +19,6 @@ export default function App() {
     baseURL: "https://www.omdbapi.com",
   });
 
-  // const config = {
-  //   headers: {
-  //     "Access-Control-Allow-Origin": "*",
-  //     "Access-Control-Allow-Methods": "POST, GET",
-  //     "Access-Control-Allow-Headers": "*",
-  //     "Access-Control-Max-Age": "86400",
-  //   },
-  // };
-
-  // api.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
-  // api.defaults.headers.post["Access-Control-Allow-Methods"] = "POST, GET";
-  // api.defaults.headers.post["Access-Control-Allow-Headers"] =
-  //   "OPTIONS,Accept,Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Header";
-  // api.defaults.headers.post["Access-Control-Max-Age"] = "86400";
-
-  // useEffect(() => {
-  //   carregamento();
-  // });
-
   // Pesquisa de filmes
   const carregamento = async () => {
     // Realizar a consulta dos filmes
@@ -46,7 +27,7 @@ export default function App() {
       .then(function (response) {
         setSearch(response.data);
         console.log(search);
-        setFilmes(JSON.stringify(search.Search));
+        setFilmes(search.Search);
         console.log(filmes);
       })
       .catch(function (error) {
@@ -54,31 +35,37 @@ export default function App() {
       });
   };
 
-  const Listagem = (_) => {
+  const Listagem = (props) => {
     return (
-      <View>
-        {filmes != null ? (
-          filmes.map((element) => {
-            <Text>{element}</Text>;
-          })
-        ) : (
-          <Text>Lista não carregada</Text>
+      <FlatList
+        data={filmes}
+        renderItem={({ item }) => (
+          <View style={estilo.card}>
+            <Image source={{ uri: item.Poster }} style={estilo.imagem} />
+            <View style={estilo.cardInterno}>
+              <Text style={estilo.itemTitle}>{item.Title}</Text>
+              <Text style={estilo.item}>{item.Year}</Text>
+              <Text style={estilo.item}>{item.Type}</Text>
+              <Text style={estilo.item}>{item.imdbID}</Text>
+            </View>
+          </View>
         )}
-      </View>
+      />
     );
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text>Consulta de Filmes</Text>
+    <View style={styles.container}>
+      <Text style={estilo.title}>Consulta de Filmes</Text>
+      <TouchableOpacity style={estilo.botao}
+        onPress={async () => {
+          await carregamento();
+        }}
+      >
+        <Text>BAIXAR LISTA DE FILMES</Text>
+      </TouchableOpacity>
 
-        <Listagem />
-
-        <TouchableOpacity onPress={carregamento}>
-          <Text>CARREGAMENTO</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      <Listagem />
+    </View>
   );
 }
