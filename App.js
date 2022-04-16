@@ -1,70 +1,143 @@
 import estilo from "./Estilo";
-import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-  Image,
-} from "react-native";
+import React, { useState, useEffect, useReducer } from "react";
+import { Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import axios from "axios";
+
+const initialState = {count: 1};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+
 
 export default function App() {
   // Estado que receberá a listagem de filmes
   const [search, setSearch] = useState([]);
-  const [filmes, setFilmes] = useState([]);
+  // const [filmes, setFilmes] = useState([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [totalPaginas, setTotalPaginas] = useState(0);
 
-  // Criar a conexão do axios com o end-point
-  const api = axios.create({
-    baseURL: "https://www.omdbapi.com",
-  });
+  useEffect(() => {
+    // if (search == null) {
+      // setContador(1);
+      carregamento({ pagina: state.count });
+      setTotalPaginas(Math.ceil(parseInt(search.totalResults) / 10));
+    // }
+  },[search]);
+
+  // // Criar a conexão do axios com o end-point
+  // const api = axios.create({
+  //   baseURL: "https://www.omdbapi.com",
+  // });
 
   // Pesquisa de filmes
-  const carregamento = async () => {
+  const carregamento = (props) => {
     // Realizar a consulta dos filmes
-    await api
-      .get("/?apikey=d8a44ab&type=movie&r=json&page=1&s=war")
+    axios
+      .get("https://www.omdbapi.com/?apikey=d8a44ab&type=movie&r=json&page=" + props.pagina + "&s=war")
       .then(function (response) {
-        setSearch(response.data);
-        console.log(search);
-        setFilmes(search.Search);
-        console.log(filmes);
+        if (response.status == 200 || response.status == 201) {
+          setSearch(response.data);
+          // console.log(search);
+          // setFilmes(search.Search);
+          // console.log(filmes);
+        }
       })
       .catch(function (error) {
         console.log(error);
       });
   };
 
+  const Item = ({ poster, title, year, type, imdbID }) => (
+    <View style={estilo.card}>
+      <Image source={{ uri: poster }} style={estilo.imagem} />
+      <View style={estilo.cardInterno}>
+        <Text style={estilo.itemTitle}>{title}</Text>
+        <Text style={estilo.item}>{year}</Text>
+        <Text style={estilo.item}>{type}</Text>
+        <Text style={estilo.item}>{imdbID}</Text>
+      </View>
+    </View>
+  );
+
   const Listagem = (props) => {
+    const renderItem = ({ item }) => (
+      <Item
+        poster={item.Poster}
+        title={item.Title}
+        year={item.Year}
+        type={item.Type}
+        imdbID={item.imdbID}
+      />
+    );
     return (
       <FlatList
-        data={filmes}
-        renderItem={({ item }) => (
-          <View style={estilo.card}>
-            <Image source={{ uri: item.Poster }} style={estilo.imagem} />
-            <View style={estilo.cardInterno}>
-              <Text style={estilo.itemTitle}>{item.Title}</Text>
-              <Text style={estilo.item}>{item.Year}</Text>
-              <Text style={estilo.item}>{item.Type}</Text>
-              <Text style={estilo.item}>{item.imdbID}</Text>
-            </View>
-          </View>
-        )}
+        data={search.Search}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.Title}
       />
     );
   };
 
+ 
+
   return (
     <View style={styles.container}>
       <Text style={estilo.title}>Consulta de Filmes</Text>
-      <TouchableOpacity style={estilo.botao}
-        onPress={async () => {
-          await carregamento();
+      {search == null ? (
+        <Text>filmes</Text>
+      ) : (
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Text>{search.totalResults}</Text>
+          <Text>Total de Páginas: {totalPaginas} </Text>
+          <View style={estilo.cardBotao}>
+            <TouchableOpacity
+              style={estilo.botao}
+              onPress={() => {
+                if (state.count > 1) dispatch({type: 'decrement'});
+                carregamento({ pagina: state.count });
+              }}
+            >
+              <Image
+                source={require("./assets/esquerda.png")}
+                style={{ width: 48, height: 48 }}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={estilo.botao}
+              onPress={() => {
+                if (state.count < totalPaginas) dispatch({type: 'increment'});
+                carregamento({ pagina: state.count });
+              }}
+            >
+              <Image
+                source={require("./assets/direita.png")}
+                style={{ width: 48, height: 48 }}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      <Text>Página: {state.count}</Text>
+      <TouchableOpacity
+        style={estilo.botao}
+        onPress={() => {
+          // setContador(1);
+          carregamento({ pagina: state.count });
+          setTotalPaginas(Math.ceil(parseInt(search.totalResults) / 10));
         }}
       >
         <Text>BAIXAR LISTA DE FILMES</Text>
       </TouchableOpacity>
-
       <Listagem />
     </View>
   );

@@ -30,7 +30,6 @@ export default styles = StyleSheet.create({
     height: 150,
     margin: 8,
     borderRadius: 8,
-    elevation: 8,
   },
   card: {
     display: "flex",
@@ -63,5 +62,19 @@ export default styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: "#EBB8E5",
     padding: 4,
+  },
+
+  cardBotao: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    borderColor: "#8858E8",
+    borderStyle: "solid",
+    borderRadius: 16,
+    borderWidth: 2,
+    margin: 4,
+    elevation: 4,
+    backgroundColor: "#EBB8E5",
+    maxHeight: 72,
   },
 });
