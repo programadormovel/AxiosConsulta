@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { HORIZONTAL } from "react-native/Libraries/Components/ScrollView/ScrollViewContext";
 
 export default styles = StyleSheet.create({
   container: {
@@ -8,6 +7,9 @@ export default styles = StyleSheet.create({
     backgroundColor: "#BADB5E",
     alignItems: "center",
     justifyContent: "space-around",
+    overflow: "hidden",
+    margin: 10,
+    
   },
   title: {
     padding: 5,
@@ -42,15 +44,20 @@ export default styles = StyleSheet.create({
     margin: 4,
     elevation: 4,
     backgroundColor: "#EBB8E5",
+    maxWidth: "70%",
+    minWidth: "60%",
+    justifyContent: 'center',
+    alignItems: "stretch",
   },
 
   cardInterno: {
-    minWidth: "60%",
-    maxWidth: "60%",
+    minWidth: "40%",
+    maxWidth: "50%",
     maxHeight: "100%",
-    alignSelf: "stretch",
+    alignSelf: "center",
     alignItems: "flex-end",
     justifyContent: "flex-end",
+    alignContent: "center"
   },
 
   botao: {
@@ -76,5 +83,17 @@ export default styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: "#EBB8E5",
     maxHeight: 72,
+    maxWidth: "90%"
   },
+
+  listagem: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "column",
+    height: "40%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: "2%",
+    maxWidth: "90%",
+  }
 });
