@@ -79,7 +79,7 @@ export default function App() {
         .get(
           "https://www.omdbapi.com/?apikey=d8a44ab&type=movie&r=json&page=" +
             state.count +
-            "&s=war"
+            "&s=love"
         )
         .then(function (response) {
           if (response.status == 200 || response.status == 201) {
@@ -94,7 +94,7 @@ export default function App() {
     };
 
     carregamento();
-  });
+  }, [state, search]);
 
   return (
     <View style={styles.container}>
